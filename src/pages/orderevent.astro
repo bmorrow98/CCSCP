@@ -1,0 +1,589 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Event Order" description="Book CC's Cake Pops for your next event.">
+  <main class="order-page">
+    <div class="form-card">
+
+      <!-- Header -->
+      <div class="form-header">
+        <img src="/ccscplogo.png" alt="CC's Cake Pops" class="form-logo" />
+        <p class="form-subtitle">EVENT CATERING ORDER FORM</p>
+        <hr class="dashed-divider" />
+      </div>
+
+      <form id="order-form" novalidate>
+
+        <!-- Customer Information -->
+        <section class="form-section">
+          <h2 class="section-heading">Customer Information</h2>
+          <hr class="section-rule" />
+
+          <div class="inline-field">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required autocomplete="name" />
+          </div>
+          <div class="inline-field">
+            <label for="phone">Phone:</label>
+            <input type="tel" id="phone" name="phone" required autocomplete="tel" />
+          </div>
+          <div class="inline-field">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required autocomplete="email" />
+          </div>
+          <div class="date-row">
+            <div class="inline-field half">
+              <label for="order-date">Order Date:</label>
+              <input type="date" id="order-date" name="order-date" required />
+            </div>
+            <div class="inline-field half">
+              <label for="event-date">Event Date:</label>
+              <input type="date" id="event-date" name="event-date" required />
+            </div>
+          </div>
+        </section>
+
+        <!-- Event Details -->
+        <section class="form-section">
+          <h2 class="section-heading">Event Details</h2>
+          <hr class="section-rule" />
+
+          <div class="inline-field">
+            <label for="event-type">Occasion:</label>
+            <input type="text" id="event-type" name="event-type" required placeholder="e.g. Wedding, Corporate, Baby Shower…" />
+          </div>
+          <div class="inline-field">
+            <label for="venue">Venue / Location:</label>
+            <input type="text" id="venue" name="venue" required placeholder="e.g. Riverside Hall, 123 Main St…" />
+          </div>
+          <div class="inline-field">
+            <label for="delivery-address">Delivery Address:</label>
+            <input type="text" id="delivery-address" name="delivery-address" required placeholder="Full street address for delivery fee calculation" />
+          </div>
+          <div class="delivery-status-wrap" id="delivery-status-wrap" hidden>
+            <span class="delivery-status-text" id="delivery-status-text"></span>
+          </div>
+          <div class="inline-field">
+            <label for="guest-count">Guest Count:</label>
+            <input type="number" id="guest-count" name="guest-count" required min="1" placeholder="e.g. 100" />
+          </div>
+        </section>
+
+        <!-- Cake Pop Selection -->
+        <section class="form-section">
+          <h2 class="section-heading">Custom Order Options</h2>
+          <hr class="section-rule" />
+
+          <div class="order-table-wrap">
+            <table class="order-table">
+              <thead>
+                <tr>
+                  <th>Item Description</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="item-name">Circle Cake Pops</td>
+                  <td>
+                    <div class="price-field">
+                      <span class="price-display">$1.50</span>
+                    </div>
+                  </td>
+                  <td>
+                    <input type="number" name="circle-qty" min="0" placeholder="0" class="qty-input" aria-label="Circle Cake Pops quantity" />
+                  </td>
+                  <td class="total-cell">
+                    <span>$</span><span class="row-total" id="circle-total">0.00</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="item-name">Almond Cake Pops</td>
+                  <td>
+                    <div class="price-field">
+                      <span class="price-display">$1.00</span>
+                    </div>
+                  </td>
+                  <td>
+                    <input type="number" name="almond-qty" min="0" placeholder="0" class="qty-input" aria-label="Almond Cake Pops quantity" />
+                  </td>
+                  <td class="total-cell">
+                    <span>$</span><span class="row-total" id="almond-total">0.00</span>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="delivery-row">
+                  <td colspan="3" class="grand-label" style="font-weight:600;color:var(--color-muted);">Delivery Fee <span id="delivery-miles-label"></span>:</td>
+                  <td class="total-cell" style="text-align:center;">
+                    <span>$</span><span id="delivery-fee-display">—</span>
+                  </td>
+                </tr>
+                <tr class="tax-row">
+                  <td colspan="3" class="grand-label" style="font-weight:600;color:var(--color-muted);">Sales Tax (6.75%):</td>
+                  <td class="total-cell" style="text-align:center;">
+                    <span>$</span><span id="tax-total">0.00</span>
+                  </td>
+                </tr>
+                <tr class="grand-total-row">
+                  <td colspan="3" class="grand-label">Estimated Grand Total:</td>
+                  <td class="total-cell grand-total-cell">
+                    <span>$</span><span id="grand-total">0.00</span>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </section>
+
+        <!-- Customization Notes -->
+        <section class="form-section">
+          <h2 class="section-heading">Customization Notes</h2>
+          <hr class="section-rule" />
+          <p class="notes-hint">(Include preferences for colors, sprinkles, theme, or coating styles below)</p>
+          <textarea id="notes" name="notes" rows="6" required placeholder="Describe your customizations here…"></textarea>
+        </section>
+
+        <div class="form-footer">
+          <button type="submit" class="btn">Submit Event Order</button>
+        </div>
+
+      </form>
+
+    </div>
+  </main>
+</Layout>
+
+<script>
+  const TAX_RATE = 0.0675;
+  const DELIVERY_MIN = 10;
+  const DELIVERY_PER_MILE = 0.70;
+  // Origin: 2349 Eastpoint Dr, Northwood, Ohio 43619
+  const ORIGIN_COORDS: [number, number] = [-83.4572, 41.6099];
+  const PRICES: Record<string, number> = { circle: 1.50, almond: 1.00 };
+
+  let deliveryFee = 0;
+  let calcPending = false;
+
+  async function geocode(address: string): Promise<[number, number] | null> {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1&countrycodes=us&addressdetails=0`;
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data) || !data.length) return null;
+    return [parseFloat(data[0].lon), parseFloat(data[0].lat)];
+  }
+
+  async function getRoadMilesOSRM(from: [number, number], to: [number, number]): Promise<number> {
+    // Try primary OSRM endpoint, then backup
+    const endpoints = [
+      `https://router.project-osrm.org/route/v1/driving/${from[0]},${from[1]};${to[0]},${to[1]}?overview=false`,
+      `https://routing.openstreetmap.de/routed-car/route/v1/driving/${from[0]},${from[1]};${to[0]},${to[1]}?overview=false`,
+    ];
+    for (const url of endpoints) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data.code === 'Ok' && data.routes?.length) {
+          return data.routes[0].distance / 1609.344;
+        }
+      } catch { /* try next */ }
+    }
+    throw new Error('All OSRM endpoints failed');
+  }
+
+  function haversineMiles(from: [number, number], to: [number, number]): number {
+    const R = 3958.8; // Earth radius in miles
+    const [lon1, lat1] = from.map(d => d * Math.PI / 180);
+    const [lon2, lat2] = to.map(d => d * Math.PI / 180);
+    const dLat = lat2 - lat1, dLon = lon2 - lon1;
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  function setDeliveryStatus(msg: string, isError = false) {
+    const wrap = document.getElementById('delivery-status-wrap')!;
+    const text = document.getElementById('delivery-status-text')!;
+    wrap.hidden = false;
+    text.textContent = msg;
+    text.className = 'delivery-status-text' + (isError ? ' error' : '');
+  }
+
+  async function calcDelivery() {
+    const addrEl = document.getElementById('delivery-address') as HTMLInputElement;
+    const addr = addrEl.value.trim();
+    if (!addr || calcPending) return;
+    calcPending = true;
+
+    setDeliveryStatus('Calculating delivery fee…');
+    document.getElementById('delivery-fee-display')!.textContent = '—';
+    document.getElementById('delivery-miles-label')!.textContent = '';
+
+    try {
+      const dest = await geocode(addr);
+      if (!dest) {
+        setDeliveryStatus('Address not found — please enter a full street address.', true);
+        deliveryFee = 0;
+        calcTotals();
+        calcPending = false;
+        return;
+      }
+
+      let miles: number;
+      let method: string;
+      try {
+        miles = await getRoadMilesOSRM(ORIGIN_COORDS, dest);
+        method = 'via roads';
+      } catch {
+        // Fallback: straight-line × 1.35 road factor
+        miles = haversineMiles(ORIGIN_COORDS, dest) * 1.35;
+        method = 'estimated';
+      }
+
+      deliveryFee = Math.max(DELIVERY_MIN, miles * DELIVERY_PER_MILE);
+      document.getElementById('delivery-fee-display')!.textContent = deliveryFee.toFixed(2);
+      document.getElementById('delivery-miles-label')!.textContent = `(${miles.toFixed(1)} mi)`;
+      setDeliveryStatus(`✓ ${miles.toFixed(1)} miles ${method} — $${deliveryFee.toFixed(2)} delivery fee`);
+      calcTotals();
+    } catch {
+      setDeliveryStatus('Unable to calculate — please verify the address.', true);
+      deliveryFee = 0;
+      document.getElementById('delivery-fee-display')!.textContent = '—';
+      calcTotals();
+    }
+    calcPending = false;
+  }
+
+  const deliveryAddrEl = document.getElementById('delivery-address') as HTMLInputElement;
+  deliveryAddrEl.addEventListener('blur', calcDelivery);
+  deliveryAddrEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); calcDelivery(); } });
+
+  function calcTotals() {
+    const rows = [
+      { key: 'circle', qtyEl: document.querySelector<HTMLInputElement>('[name="circle-qty"]')!, totalEl: document.getElementById('circle-total')! },
+      { key: 'almond', qtyEl: document.querySelector<HTMLInputElement>('[name="almond-qty"]')!, totalEl: document.getElementById('almond-total')! },
+    ];
+    let subtotal = 0;
+    rows.forEach(({ key, qtyEl, totalEl }) => {
+      const q = parseInt(qtyEl.value) || 0;
+      const t = PRICES[key] * q;
+      subtotal += t;
+      totalEl.textContent = t.toFixed(2);
+    });
+    const tax = subtotal * TAX_RATE;
+    document.getElementById('tax-total')!.textContent = tax.toFixed(2);
+    document.getElementById('grand-total')!.textContent = (subtotal + deliveryFee + tax).toFixed(2);
+  }
+
+  document.querySelectorAll<HTMLInputElement>('[name="circle-qty"],[name="almond-qty"]').forEach(el => {
+    el.addEventListener('input', calcTotals);
+  });
+
+  // Inline field error highlighting
+  const form = document.getElementById('order-form') as HTMLFormElement;
+
+  form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach(el => {
+    el.addEventListener('blur', () => {
+      el.classList.toggle('field-error', !el.validity.valid);
+    });
+    el.addEventListener('input', () => {
+      if (el.validity.valid) el.classList.remove('field-error');
+    });
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach(el => {
+      el.classList.toggle('field-error', !el.validity.valid);
+    });
+    if (!form.checkValidity()) {
+      form.querySelector<HTMLElement>('.field-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    // TODO: wire up submission
+  });
+</script>
+
+<style>
+  .order-page {
+    padding: 3rem 1.5rem 5rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .form-card {
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-border-soft);
+    border-radius: 20px;
+    padding: 3rem 3.5rem;
+    width: 100%;
+    max-width: 780px;
+    box-shadow: 0 4px 32px rgba(232,25,139,0.07);
+  }
+
+  .form-header { text-align: center; margin-bottom: 1.5rem; }
+
+  .form-logo {
+    width: min(240px, 60vw);
+    height: auto;
+    margin: 0 auto 0.75rem;
+  }
+
+  .form-subtitle {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+  }
+
+  .dashed-divider {
+    border: none;
+    border-top: 2px dashed var(--color-border);
+    opacity: 0.7;
+    margin: 0.5rem 0;
+  }
+
+  .form-section { margin-top: 2rem; }
+
+  .section-heading {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--color-accent);
+    margin-bottom: 0.4rem;
+  }
+
+  .section-rule {
+    border: none;
+    border-top: 1px solid var(--color-border-soft);
+    margin-bottom: 1.25rem;
+  }
+
+  .inline-field {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .inline-field label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-text);
+    white-space: nowrap;
+    min-width: 100px;
+  }
+
+  .inline-field input,
+  .inline-field select {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--color-border);
+    border-radius: 0;
+    color: var(--color-text);
+    font-size: 0.95rem;
+    font-family: inherit;
+    padding: 0.25rem 0.25rem 0.3rem;
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none;
+  }
+
+  .inline-field input:focus,
+  .inline-field select:focus { border-bottom-color: var(--color-accent); }
+
+  .inline-field.half { flex: 1; min-width: 180px; }
+
+  .date-row {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .order-table-wrap {
+    overflow-x: auto;
+    border: 1.5px solid var(--color-border);
+    border-radius: 10px;
+  }
+
+  .order-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+
+  .order-table thead tr {
+    background: transparent;
+    border-bottom: 1.5px solid var(--color-border);
+  }
+
+  .order-table th {
+    padding: 0.85rem 1rem;
+    font-weight: 800;
+    color: var(--color-accent);
+    text-align: left;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+  }
+
+  .order-table th:not(:first-child),
+  .order-table td:not(:first-child) { text-align: center; }
+
+  .order-table tbody tr { border-bottom: 1px solid var(--color-border-soft); }
+  .order-table tbody tr:last-child { border-bottom: none; }
+
+  .order-table td {
+    padding: 0.85rem 1rem;
+    color: var(--color-text);
+  }
+
+  .item-name { font-weight: 600; }
+
+  .price-field {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+  }
+
+  .price-display { color: var(--color-muted); font-size: 0.9rem; font-weight: 600; }
+
+  .qty-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--color-border);
+    color: var(--color-text);
+    font-size: 0.92rem;
+    font-family: inherit;
+    text-align: center;
+    outline: none;
+    width: 70px;
+    padding: 0.2rem 0.25rem;
+    transition: border-color 0.2s;
+  }
+
+  .qty-input:focus { border-bottom-color: var(--color-accent); }
+
+  .total-cell {
+    font-weight: 700;
+    color: var(--color-text);
+    white-space: nowrap;
+  }
+
+  /* Delivery status */
+  .delivery-status-wrap {
+    margin-top: 0.4rem;
+    margin-left: 104px;
+    font-size: 0.82rem;
+  }
+
+  .delivery-status-text { color: var(--color-muted); }
+  .delivery-status-text.error { color: #e53e3e; }
+
+  .delivery-row td {
+    border-top: 1px solid var(--color-border-soft);
+  }
+
+  .tax-row td {
+    border-top: 1px solid var(--color-border-soft);
+  }
+
+  .grand-total-row {
+    background: var(--color-surface-soft);
+    border-top: 1.5px solid var(--color-border);
+  }
+
+  .grand-label {
+    text-align: right;
+    font-weight: 800;
+    color: var(--color-accent);
+    font-size: 0.9rem;
+    padding: 0.9rem 1rem;
+    letter-spacing: 0.02em;
+  }
+
+  .grand-total-cell {
+    font-weight: 800;
+    color: var(--color-accent);
+    font-size: 1rem;
+    padding: 0.9rem 1rem;
+    text-align: center;
+  }
+
+  .notes-hint {
+    font-size: 0.82rem;
+    color: var(--color-muted);
+    font-style: italic;
+    margin-bottom: 0.75rem;
+  }
+
+  textarea {
+    width: 100%;
+    background: transparent;
+    border: 1.5px solid var(--color-border-soft);
+    border-radius: 8px;
+    color: var(--color-text);
+    font-size: 0.92rem;
+    font-family: inherit;
+    padding: 0.75rem 1rem;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  textarea:focus { border-color: var(--color-accent); }
+
+  /* Validation error state */
+  .inline-field input.field-error,
+  .inline-field select.field-error,
+  textarea.field-error {
+    border-bottom-color: #e53e3e;
+  }
+
+  .qty-input.field-error {
+    border-bottom-color: #e53e3e;
+  }
+
+  .form-footer {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .form-success {
+    text-align: center;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .success-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: #fff;
+    font-size: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+  }
+
+  .form-success h3 { font-size: 1.5rem; color: var(--color-text); font-weight: 800; }
+  .form-success p { color: var(--color-muted); }
+
+  @media (max-width: 600px) {
+    .form-card { padding: 2rem 1.25rem; }
+    .date-row { flex-direction: column; gap: 0; }
+    .form-footer { justify-content: center; }
+    .grand-label { text-align: left; }
+  }
+</style>

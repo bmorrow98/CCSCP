@@ -1,0 +1,252 @@
+﻿---
+import Layout from '../layouts/Layout.astro';
+
+const items = [
+  { id: 1, title: "Pink Swirl Pops",    category: "Local Custom",   src: "", aspect: "square" },
+  { id: 2, title: "Chocolate Dream",    category: "Event Catering", src: "", aspect: "wide" },
+  { id: 3, title: "Wedding Collection", category: "Event Catering", src: "", aspect: "square" },
+  { id: 4, title: "Baby Shower Set",    category: "Local Custom",   src: "", aspect: "tall" },
+  { id: 5, title: "Birthday Batch",     category: "Local Custom",   src: "", aspect: "square" },
+  { id: 6, title: "Holiday Pops",       category: "Local Custom",   src: "", aspect: "square" },
+  { id: 7, title: "Custom Themed Set",  category: "Event Catering", src: "", aspect: "wide" },
+  { id: 8, title: "Sprinkle Delight",   category: "Local Custom",   src: "", aspect: "square" },
+  { id: 9, title: "Rose Gold Finish",   category: "Event Catering", src: "", aspect: "square" },
+];
+
+const categories = ["All", "Local Custom", "Event Catering"];
+---
+
+<Layout title="Gallery" description="Browse CC's Cake Pops custom creations and past work.">
+  <main class="gallery-page">
+    <div class="container">
+
+      <div class="page-header">
+        <img src="/ccscplogo.png" alt="CC's Cake Pops" class="gallery-logo" />
+        <p class="gallery-subtitle">A look at some of our sweet creations</p>
+        <hr class="dashed-divider" />
+      </div>
+
+      <!-- Filter pills -->
+      <div class="filter-bar" role="tablist">
+        {categories.map((cat) => (
+          <button
+            class={`filter-btn ${cat === "All" ? "active" : ""}`}
+            data-filter={cat}
+            role="tab"
+            aria-selected={cat === "All" ? "true" : "false"}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <!-- Grid -->
+      <div class="gallery-grid" id="gallery-grid">
+        {items.map((item) => (
+          <div class={`gallery-item ${item.aspect}`} data-category={item.category}>
+            <div class="gallery-img-wrap">
+              {item.src
+                ? <img src={item.src} alt={item.title} loading="lazy" />
+                : <div class="placeholder-img">
+                    <span class="placeholder-icon">🍭</span>
+                    <span class="placeholder-label">{item.title}</span>
+                  </div>
+              }
+            </div>
+            <div class="gallery-overlay">
+              <span class="gallery-cat">{item.category} Cake Pops</span>
+              <h3>{item.title}</h3>
+              <a href="/order" class="btn" style="margin-top:0.65rem;font-size:0.78rem;padding:0.45rem 1.1rem;">
+                Order Similar
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="gallery-cta">
+        <p>Don't see what you're looking for? We do fully custom designs!</p>
+        <a href="/order" class="btn">Request a Custom Order</a>
+      </div>
+
+    </div>
+  </main>
+</Layout>
+
+<script>
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const items = document.querySelectorAll<HTMLElement>('.gallery-item');
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach((b) => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      const filter = btn.dataset.filter!;
+      items.forEach((item) => {
+        const show = filter === 'All' || item.dataset.category === filter;
+        item.style.display = show ? '' : 'none';
+      });
+    });
+  });
+</script>
+
+<style>
+  .gallery-page { padding: 3rem 0 5rem; }
+
+  .page-header { text-align: center; margin-bottom: 2rem; }
+
+  .gallery-logo {
+    width: min(220px, 55vw);
+    height: auto;
+    margin: 0 auto 0.75rem;
+  }
+
+  .gallery-subtitle {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    margin-bottom: 1.25rem;
+  }
+
+  .dashed-divider {
+    border: none;
+    border-top: 2px dashed var(--color-border);
+    opacity: 0.6;
+    margin: 0.5rem 0 2rem;
+  }
+
+  /* Filter pills */
+  .filter-bar {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    justify-content: center;
+  }
+
+  .filter-btn {
+    padding: 0.45rem 1.25rem;
+    border-radius: 99px;
+    border: 1.5px solid var(--color-border);
+    background: transparent;
+    color: var(--color-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .filter-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+  .filter-btn.active {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+    box-shadow: 0 3px 12px rgba(232,25,139,0.25);
+  }
+
+  /* Grid */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-auto-rows: 220px;
+    gap: 1rem;
+  }
+
+  .gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    border: 1.5px solid var(--color-border-soft);
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    background: var(--color-surface);
+  }
+
+  .gallery-item.wide  { grid-column: span 2; }
+  .gallery-item.tall  { grid-row: span 2; }
+
+  .gallery-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 32px rgba(232,25,139,0.14);
+    border-color: var(--color-border);
+  }
+
+  .gallery-item:hover .gallery-overlay { opacity: 1; }
+
+  .gallery-img-wrap { width: 100%; height: 100%; }
+
+  .gallery-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Placeholder */
+  .placeholder-img {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--color-surface-soft) 0%, #fce4ef 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .placeholder-icon { font-size: 2.5rem; }
+
+  .placeholder-label {
+    color: var(--color-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 0 1rem;
+  }
+
+  /* Overlay */
+  .gallery-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(232,25,139,0.75) 0%, rgba(232,25,139,0.1) 55%, transparent 100%);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .gallery-cat {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 0.2rem;
+  }
+
+  .gallery-overlay h3 { font-size: 1rem; font-weight: 800; color: #fff; }
+
+  /* CTA strip */
+  .gallery-cta {
+    margin-top: 3rem;
+    background: var(--color-surface-soft);
+    border: 1.5px solid var(--color-border-soft);
+    border-radius: 16px;
+    padding: 2rem 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .gallery-cta p { color: var(--color-muted); font-size: 0.95rem; font-weight: 600; }
+
+  @media (max-width: 600px) {
+    .gallery-item.wide  { grid-column: span 1; }
+    .gallery-item.tall  { grid-row: span 1; }
+    .gallery-cta { flex-direction: column; text-align: center; }
+  }
+</style>

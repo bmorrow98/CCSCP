@@ -1,0 +1,281 @@
+﻿---
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = "CC's Cake Pops â€“ Custom handcrafted cake pops made with love." } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/png" href="/ccscplogo.png" />
+    <link rel="apple-touch-icon" href="/ccscplogo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <title>{title} | CC's Cake Pops</title>
+    <style is:global>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --color-bg: #fff9fb;
+        --color-surface: #ffffff;
+        --color-surface-soft: #fff0f6;
+        --color-border: #f4b8d4;
+        --color-border-soft: #fce4ef;
+        --color-accent: #e8198b;
+        --color-accent-dark: #c41475;
+        --color-accent-light: #fce4ef;
+        --color-text: #2a1a22;
+        --color-muted: #9a7a88;
+        --font-sans: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+        --font-display: 'Playfair Display', Georgia, serif;
+      }
+
+      html { scroll-behavior: smooth; }
+
+      body {
+        font-family: var(--font-sans);
+        background: var(--color-bg);
+        color: var(--color-text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      a { color: inherit; text-decoration: none; }
+
+      img { max-width: 100%; display: block; }
+
+      /* â”€â”€ Nav â”€â”€ */
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(255,249,251,0.95);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--color-border-soft);
+        padding: 0 2rem;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 1px 12px rgba(232,25,139,0.06);
+      }
+
+      .nav-logo {
+        display: flex;
+        align-items: center;
+      }
+
+      .nav-logo img {
+        height: 48px;
+        width: auto;
+        object-fit: contain;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        list-style: none;
+      }
+
+      .nav-links li {
+        display: flex;
+        align-items: center;
+      }
+
+      .nav-links a {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--color-muted);
+        transition: color 0.2s;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active { color: var(--color-accent); }
+
+      /* ── Dropdown ── */
+      .nav-dropdown {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .nav-dropdown-toggle {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--color-muted);
+        transition: color 0.2s;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        padding: 0;
+        margin: 0;
+        line-height: inherit;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
+      .nav-dropdown-toggle::after {
+        content: '\25BE';
+        font-size: 0.7rem;
+        transition: transform 0.2s;
+      }
+
+      .nav-dropdown-toggle.active,
+      .nav-dropdown.open .nav-dropdown-toggle { color: var(--color-accent); }
+
+      .nav-dropdown.open .nav-dropdown-toggle::after { transform: rotate(180deg); }
+
+      .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 0.6rem);
+        right: 0;
+        background: var(--color-surface);
+        border: 1.5px solid var(--color-border-soft);
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(232,25,139,0.1);
+        min-width: 180px;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-6px);
+        transition: opacity 0.18s, transform 0.18s;
+        z-index: 200;
+        overflow: hidden;
+      }
+
+      .nav-dropdown.open .dropdown-menu {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      .dropdown-menu a {
+        display: block;
+        padding: 0.7rem 1.1rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--color-muted);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        transition: background 0.15s, color 0.15s;
+        text-decoration: none;
+      }
+
+      .dropdown-menu a:hover { background: var(--color-surface-soft); color: var(--color-accent); }
+
+      /* â”€â”€ Footer â”€â”€ */
+      footer {
+        margin-top: auto;
+        border-top: 1px solid var(--color-border-soft);
+        background: var(--color-surface);
+        padding: 2.5rem;
+        text-align: center;
+        color: var(--color-muted);
+        font-size: 0.85rem;
+      }
+
+      footer .footer-logo img {
+        height: 80px;
+        width: auto;
+        object-fit: contain;
+        margin: 0 auto 0.5rem;
+        display: block;
+        opacity: 0.9;
+      }
+
+      /* â”€â”€ Utility â”€â”€ */
+      .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+      .section-divider {
+        border: none;
+        border-top: 2px dashed var(--color-border);
+        margin: 0.75rem 0 1.5rem;
+        opacity: 0.6;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 0.7rem 1.9rem;
+        background: var(--color-accent);
+        color: #fff;
+        font-family: var(--font-sans);
+        font-weight: 800;
+        border-radius: 50px;
+        border: 2px solid var(--color-accent);
+        cursor: pointer;
+        font-size: 0.9rem;
+        letter-spacing: 0.04em;
+        transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+        box-shadow: 0 4px 14px rgba(232,25,139,0.25);
+      }
+      .btn:hover { background: var(--color-accent-dark); border-color: var(--color-accent-dark); box-shadow: 0 6px 18px rgba(232,25,139,0.35); }
+      .btn:active { transform: scale(0.98); }
+      .btn-outline {
+        background: transparent;
+        color: var(--color-accent);
+        box-shadow: none;
+      }
+      .btn-outline:hover { background: var(--color-accent); color: #fff; }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="/" class="nav-logo" aria-label="CC's Cake Pops â€“ Home">
+        <img src="/ccscplogo.png" alt="CC's Cake Pops" />
+      </a>
+      <ul class="nav-links">
+        <li><a href="/" class={Astro.url.pathname === "/" ? "active" : ""}>Home</a></li>
+        <li><a href="/gallery" class={Astro.url.pathname.startsWith("/gallery") ? "active" : ""}>Gallery</a></li>
+        <li class="nav-dropdown">
+          <button class={`nav-dropdown-toggle${Astro.url.pathname.startsWith("/order") ? " active" : ""}`} aria-haspopup="true">Order</button>
+          <div class="dropdown-menu">
+            <a href="/order">Local Pickup</a>
+            <a href="/orderevent">Event</a>
+          </div>
+        </li>
+      </ul>
+    </nav>
+
+    <slot />
+
+    <script>
+      const toggle = document.querySelector('.nav-dropdown-toggle') as HTMLButtonElement;
+      const dropdown = document.querySelector('.nav-dropdown') as HTMLElement;
+
+      toggle?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('open');
+      });
+
+      // Close when clicking anywhere outside
+      document.addEventListener('click', () => {
+        dropdown?.classList.remove('open');
+      });
+
+      // Close when a menu link is clicked (navigation handles the rest)
+      dropdown?.querySelectorAll('.dropdown-menu a').forEach(link => {
+        link.addEventListener('click', () => dropdown.classList.remove('open'));
+      });
+    </script>
+
+    <footer>
+      <div class="footer-logo">
+        <img src="/ccscplogo.png" alt="CC's Cake Pops" />
+      </div>
+      <p>&copy; {new Date().getFullYear()} CC's Cake Pops. All rights reserved. | Designed by Odin Web Design LLC</p>
+    </footer>
+  </body>
+</html>
