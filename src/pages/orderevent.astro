@@ -90,7 +90,7 @@ import Layout from '../layouts/Layout.astro';
                   <td class="item-name">Circle Cake Pops</td>
                   <td>
                     <div class="price-field">
-                      <span class="price-display">$1.50</span>
+                      <span class="price-display">$2.50</span>
                     </div>
                   </td>
                   <td>
@@ -104,7 +104,7 @@ import Layout from '../layouts/Layout.astro';
                   <td class="item-name">Almond Cake Pops</td>
                   <td>
                     <div class="price-field">
-                      <span class="price-display">$1.00</span>
+                      <span class="price-display">$3.50</span>
                     </div>
                   </td>
                   <td>
@@ -163,7 +163,7 @@ import Layout from '../layouts/Layout.astro';
   const DELIVERY_PER_MILE = 0.70;
   // Origin: 2349 Eastpoint Dr, Northwood, Ohio 43619
   const ORIGIN_COORDS: [number, number] = [-83.4572, 41.6099];
-  const PRICES: Record<string, number> = { circle: 1.50, almond: 1.00 };
+  const PRICES: Record<string, number> = { circle: 2.50, almond: 3.50 };
 
   let deliveryFee = 0;
   let calcPending = false;
@@ -226,7 +226,7 @@ import Layout from '../layouts/Layout.astro';
     try {
       const dest = await geocode(addr);
       if (!dest) {
-        setDeliveryStatus('Address not found — please enter a full street address.', true);
+        setDeliveryStatus('Address not found, please enter a full street address.', true);
         deliveryFee = 0;
         calcTotals();
         calcPending = false;
@@ -247,10 +247,10 @@ import Layout from '../layouts/Layout.astro';
       deliveryFee = Math.max(DELIVERY_MIN, miles * DELIVERY_PER_MILE);
       document.getElementById('delivery-fee-display')!.textContent = deliveryFee.toFixed(2);
       document.getElementById('delivery-miles-label')!.textContent = `(${miles.toFixed(1)} mi)`;
-      setDeliveryStatus(`✓ ${miles.toFixed(1)} miles ${method} — $${deliveryFee.toFixed(2)} delivery fee`);
+      setDeliveryStatus(`✓ ${miles.toFixed(1)} miles ${method}, $${deliveryFee.toFixed(2)} delivery fee`);
       calcTotals();
     } catch {
-      setDeliveryStatus('Unable to calculate — please verify the address.', true);
+      setDeliveryStatus('Unable to calculate, please verify the address.', true);
       deliveryFee = 0;
       document.getElementById('delivery-fee-display')!.textContent = '—';
       calcTotals();

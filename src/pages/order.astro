@@ -64,7 +64,7 @@ import Layout from '../layouts/Layout.astro';
                   <td class="item-name">Circle Cake Pops</td>
                   <td>
                     <div class="price-field">
-                      <span class="price-display">$1.50</span>
+                      <span class="price-display">$2.50</span>
                     </div>
                   </td>
                   <td>
@@ -78,7 +78,7 @@ import Layout from '../layouts/Layout.astro';
                   <td class="item-name">Almond Cake Pops</td>
                   <td>
                     <div class="price-field">
-                      <span class="price-display">$1.00</span>
+                      <span class="price-display">$3.50</span>
                     </div>
                   </td>
                   <td>
@@ -115,11 +115,26 @@ import Layout from '../layouts/Layout.astro';
           <textarea id="notes" name="notes" rows="6" required placeholder="Describe your customizations here…"></textarea>
         </section>
 
+        <!-- Web3Forms hidden fields -->
+        <input type="hidden" name="access_key" value="d6f5e231-f907-48c2-a9c1-0681508710fa" />
+        <input type="hidden" name="subject" value="New Local Pickup Order – CC's Cake Pops" />
+        <input type="hidden" name="from_name" value="CC's Cake Pops Website" />
+        <input type="hidden" id="hidden-circle-total" name="Circle Cake Pops Total" value="" />
+        <input type="hidden" id="hidden-almond-total" name="Almond Cake Pops Total" value="" />
+        <input type="hidden" id="hidden-tax" name="Sales Tax (6.75%)" value="" />
+        <input type="hidden" id="hidden-grand-total" name="Estimated Grand Total" value="" />
+
         <div class="form-footer">
           <button type="submit" class="btn">Submit Order</button>
         </div>
 
       </form>
+
+      <div id="order-success" class="form-success" style="display:none;">
+        <div class="success-icon">✓</div>
+        <h3>Order Submitted!</h3>
+        <p>Thank you! CC will be in touch shortly to confirm your order.</p>
+      </div>
 
     </div>
   </main>
@@ -127,7 +142,7 @@ import Layout from '../layouts/Layout.astro';
 
 <script>
   const TAX_RATE = 0.0675;
-  const PRICES: Record<string, number> = { circle: 1.50, almond: 1.00 };
+  const PRICES: Record<string, number> = { circle: 2.50, almond: 3.50 };
 
   function calcTotals() {
     const rows = [
@@ -162,7 +177,7 @@ import Layout from '../layouts/Layout.astro';
     });
   });
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     // Mark all invalid fields on submit attempt
     form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach(el => {
@@ -172,7 +187,42 @@ import Layout from '../layouts/Layout.astro';
       form.querySelector<HTMLElement>('.field-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
-    // TODO: wire up submission
+
+    // Populate hidden total fields before submission
+    (document.getElementById('hidden-circle-total') as HTMLInputElement).value =
+      '$' + (document.getElementById('circle-total')?.textContent ?? '0.00');
+    (document.getElementById('hidden-almond-total') as HTMLInputElement).value =
+      '$' + (document.getElementById('almond-total')?.textContent ?? '0.00');
+    (document.getElementById('hidden-tax') as HTMLInputElement).value =
+      '$' + (document.getElementById('tax-total')?.textContent ?? '0.00');
+    (document.getElementById('hidden-grand-total') as HTMLInputElement).value =
+      '$' + (document.getElementById('grand-total')?.textContent ?? '0.00');
+
+    const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: new FormData(form),
+      });
+      const data = await res.json();
+      if (data.success) {
+        form.style.display = 'none';
+        const successEl = document.getElementById('order-success')!;
+        successEl.style.display = 'flex';
+        successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Order';
+        alert('Something went wrong. Please try again or contact CC directly.');
+      }
+    } catch {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Order';
+      alert('Network error. Please check your connection and try again.');
+    }
   });
 </script>
 

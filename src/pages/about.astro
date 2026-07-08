@@ -1,0 +1,322 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="About" description="Learn the story behind CC's Cake Pops – handcrafted with love in Northwood, Ohio.">
+  <main class="about-page">
+
+    <!-- Hero split: photo + intro -->
+    <section class="about-hero container">
+      <div class="about-photo">
+        <!-- Replace /about-photo.jpg with your actual photo in public/ -->
+        <img src="/about-photo.jpg" alt="CC's Cake Pops – About Us" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+        <div class="photo-placeholder">
+          <span>🍭</span>
+          <p>Add your photo to<br/><code>public/about-photo.jpg</code></p>
+        </div>
+      </div>
+
+      <div class="about-intro">
+        <span class="eyebrow">Our Story</span>
+        <h1>About CC's Cake Pops</h1>
+        <hr class="dashed-divider" />
+        <p>
+          Hi, I'm CC, a cake pop maker based in Northwood, Ohio with a passion for
+          turning simple celebrations into sweet memories. What started as a hobby in my
+          kitchen has grown into something I'm truly proud to share with our community.
+        </p>
+        <p>
+          Every cake pop I make is handcrafted from scratch, baked, dipped, and decorated
+          with care. No shortcuts, no mass production. Just small batches made with love
+          for people who deserve something special.
+        </p>
+        <div class="about-actions">
+          <a href="/order" class="btn">Place an Order</a>
+          <a href="/gallery" class="btn btn-outline">View Gallery</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Full story section -->
+    <section class="about-story">
+      <div class="container story-inner">
+        <h2>How It All Started</h2>
+        <hr class="dashed-divider" />
+        <div class="story-body">
+          <p>
+            It all started with a birthday party and a batch of cake pops that didn't
+            look quite right, but tasted absolutely amazing. Friends kept asking where
+            I bought them, and when I told them I made them myself, the requests started
+            rolling in.
+          </p>
+          <p>
+            I spent months perfecting my recipes, experimenting with flavors, coatings,
+            and decorating techniques. I took every custom order as a chance to learn
+            something new. Weddings, baby showers, holidays, corporate events, each one
+            pushed me to level up my craft.
+          </p>
+          <p>
+            Today, CC's Cake Pops serves families and businesses across Northwest Ohio.
+            Whether you need a dozen pops for a small gathering or a full spread for a
+            major event, I bring the same attention to detail and genuine love for the
+            craft to every single order.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Values / highlights -->
+    <section class="about-values">
+      <div class="container">
+        <h2>What We Stand For</h2>
+        <hr class="dashed-divider" style="margin: 0.5rem auto 2.5rem; max-width: 60px;" />
+        <div class="values-grid">
+          <div class="value-card">
+            <div class="value-icon">🍰</div>
+            <h3>Made from Scratch</h3>
+            <p>Every pop starts with real cake, baked fresh, never from a mix. You can taste the difference.</p>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">🎨</div>
+            <h3>Custom Everything</h3>
+            <p>Colors, themes, coatings, toppings, we work with you to make exactly what you're envisioning.</p>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">📍</div>
+            <h3>Local & Community-First</h3>
+            <p>Proudly based in Northwood, Ohio. We love supporting local events and giving back to the community we call home.</p>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">💕</div>
+            <h3>Made with Love</h3>
+            <p>This isn't just a business, it's a passion project. Every order gets our full heart and attention.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="about-cta">
+      <div class="container cta-inner">
+        <div>
+          <h2>Ready to work together?</h2>
+          <p>Browse the gallery for inspiration or jump straight to placing your order.</p>
+        </div>
+        <div class="cta-actions">
+          <a href="/gallery" class="btn btn-outline">View Gallery</a>
+          <a href="/order" class="btn">Order Now</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</Layout>
+
+<style>
+  .about-page { padding-bottom: 5rem; }
+
+  /* Hero split */
+  .about-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  .about-photo {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    aspect-ratio: 4/5;
+    border: 1.5px solid var(--color-border-soft);
+    box-shadow: 0 8px 32px rgba(232,25,139,0.1);
+  }
+
+  .about-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .photo-placeholder {
+    display: none;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--color-surface-soft) 0%, #fce4ef 100%);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    text-align: center;
+    min-height: 400px;
+  }
+
+  .photo-placeholder span { font-size: 4rem; }
+  .photo-placeholder p { color: var(--color-muted); font-size: 0.9rem; line-height: 1.5; }
+  .photo-placeholder code {
+    background: var(--color-border-soft);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--color-accent);
+  }
+
+  .about-intro .eyebrow {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    display: block;
+    margin-bottom: 0.6rem;
+  }
+
+  .about-intro h1 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .dashed-divider {
+    border: none;
+    border-top: 2px dashed var(--color-border);
+    opacity: 0.65;
+    margin: 0.5rem 0 1.5rem;
+  }
+
+  .about-intro p {
+    color: var(--color-muted);
+    font-size: 1rem;
+    line-height: 1.75;
+    margin-bottom: 1rem;
+  }
+
+  .about-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.75rem;
+  }
+
+  /* Story section */
+  .about-story {
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border-soft);
+    border-bottom: 1px solid var(--color-border-soft);
+    padding: 4rem 0;
+  }
+
+  .story-inner h2 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-bottom: 0.4rem;
+  }
+
+  .story-body {
+    columns: 2;
+    column-gap: 3rem;
+    margin-top: 0.5rem;
+  }
+
+  .story-body p {
+    color: var(--color-muted);
+    font-size: 0.97rem;
+    line-height: 1.8;
+    margin-bottom: 1.25rem;
+    break-inside: avoid;
+  }
+
+  /* Values */
+  .about-values { padding: 4.5rem 0; }
+
+  .about-values h2 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    text-align: center;
+    margin-bottom: 0.4rem;
+  }
+
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .value-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-soft);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+
+  .value-card:hover {
+    border-color: var(--color-border);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(232,25,139,0.08);
+  }
+
+  .value-icon { font-size: 2rem; margin-bottom: 0.85rem; }
+
+  .value-card h3 {
+    font-size: 0.98rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+  }
+
+  .value-card p {
+    color: var(--color-muted);
+    font-size: 0.87rem;
+    line-height: 1.65;
+  }
+
+  /* CTA */
+  .about-cta {
+    padding: 4rem 0;
+    border-top: 1px solid var(--color-border-soft);
+    background: var(--color-surface-soft);
+  }
+
+  .cta-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .about-cta h2 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-bottom: 0.4rem;
+  }
+
+  .about-cta p { color: var(--color-muted); font-size: 0.95rem; }
+
+  .cta-actions { display: flex; gap: 1rem; flex-wrap: wrap; flex-shrink: 0; }
+
+  @media (max-width: 768px) {
+    .about-hero { grid-template-columns: 1fr; gap: 2rem; }
+    .story-body { columns: 1; }
+    .cta-inner { text-align: center; justify-content: center; }
+    .cta-actions { justify-content: center; }
+  }
+</style>

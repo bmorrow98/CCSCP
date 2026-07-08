@@ -238,6 +238,7 @@ const { title, description = "CC's Cake Pops â€“ Custom handcrafted cake po
       </a>
       <ul class="nav-links">
         <li><a href="/" class={Astro.url.pathname === "/" ? "active" : ""}>Home</a></li>
+        <li><a href="/about" class={Astro.url.pathname.startsWith("/about") ? "active" : ""}>About</a></li>
         <li><a href="/gallery" class={Astro.url.pathname.startsWith("/gallery") ? "active" : ""}>Gallery</a></li>
         <li class="nav-dropdown">
           <button class={`nav-dropdown-toggle${Astro.url.pathname.startsWith("/order") ? " active" : ""}`} aria-haspopup="true">Order</button>
