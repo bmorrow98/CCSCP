@@ -2,18 +2,22 @@
 import Layout from '../layouts/Layout.astro';
 
 const items = [
-  { id: 1, title: "Spring Wedding",        category: "Wedding Collections",  src: "", aspect: "square" },
-  { id: 2, title: "Garden Wedding",        category: "Wedding Collections",  src: "", aspect: "wide" },
-  { id: 3, title: "Pink Baby Shower",      category: "Baby Shower Sets",     src: "", aspect: "square" },
-  { id: 4, title: "Blue Baby Shower",      category: "Baby Shower Sets",     src: "", aspect: "tall" },
-  { id: 5, title: "Rose Gold Bridal",      category: "Bridal Shower Sets",   src: "", aspect: "square" },
-  { id: 6, title: "Floral Bridal Shower",  category: "Bridal Shower Sets",   src: "", aspect: "wide" },
-  { id: 7, title: "Holiday Theme Set",     category: "Custom Themed Sets",   src: "", aspect: "square" },
-  { id: 8, title: "Birthday Bash Set",     category: "Custom Themed Sets",   src: "", aspect: "square" },
-  { id: 9, title: "Unicorn Theme Set",     category: "Custom Themed Sets",   src: "", aspect: "square" },
-  { id: 10, title: "Christmas Set",        category: "Holiday Sets",          src: "", aspect: "square" },
-  { id: 11, title: "Valentine's Day Set",  category: "Holiday Sets",          src: "", aspect: "wide" },
-  { id: 12, title: "Easter Collection",    category: "Holiday Sets",          src: "", aspect: "square" },
+  { id: 1,  title: "Wedding Cake Pops",    category: "Wedding Collections", src: "/15593.jpg", aspect: "square" },
+  { id: 2,  title: "Wedding Cake Pops",    category: "Wedding Collections", src: "/15641.jpg", aspect: "square" },
+  { id: 3,  title: "Wedding Cake Pops",    category: "Wedding Collections", src: "/15659.jpg", aspect: "square" },
+  { id: 4,  title: "Wedding Cake Pops",    category: "Wedding Collections", src: "/15664.jpg", aspect: "square" },
+  { id: 5,  title: "Wedding Cake Pops",    category: "Wedding Collections", src: "/15666.jpg", aspect: "square" },
+  { id: 6,  title: "Baby Shower Set",      category: "Baby Shower Sets",    src: "/15573.jpg", aspect: "square" },
+  { id: 7,  title: "Baby Shower Set",      category: "Baby Shower Sets",    src: "/15612.jpg", aspect: "square" },
+  { id: 8,  title: "Baby Shower Set",      category: "Baby Shower Sets",    src: "/15776.jpg", aspect: "square" },
+  { id: 9,  title: "Baby Shower Set",      category: "Baby Shower Sets",    src: "/15779.jpg", aspect: "square" },
+  { id: 10, title: "Bridal Shower Set",    category: "Bridal Shower Sets",  src: "/15586.jpg", aspect: "square" },
+  { id: 11, title: "Bridal Shower Set",    category: "Bridal Shower Sets",  src: "/15604.jpg", aspect: "square" },
+  { id: 12, title: "Bridal Shower Set",    category: "Bridal Shower Sets",  src: "/15635.jpg", aspect: "square" },
+  { id: 13, title: "Custom Themed Set",    category: "Custom Themed Sets",  src: "/15888.jpg", aspect: "square" },
+  { id: 14, title: "Holiday Set",          category: "Holiday Sets",        src: "/15842.jpg", aspect: "square" },
+  { id: 15, title: "Holiday Set",          category: "Holiday Sets",        src: "/15845.jpg", aspect: "square" },
+  { id: 16, title: "Holiday Set",          category: "Holiday Sets",        src: "/15849.jpg", aspect: "square" },
 ];
 
 const categories = ["All", "Wedding Collections", "Baby Shower Sets", "Bridal Shower Sets", "Custom Themed Sets", "Holiday Sets"];
@@ -24,8 +28,20 @@ const categories = ["All", "Wedding Collections", "Baby Shower Sets", "Bridal Sh
     <div class="container">
 
       <div class="page-header">
-        <img src="/ccscplogo.png" alt="CC's Cake Pops" class="gallery-logo" />
+        <img src="/ccscplogo-almond.png" alt="CC's Cake Pops" class="gallery-logo" />
         <p class="gallery-subtitle">A look at some of our sweet creations</p>
+        <a
+          href="https://www.facebook.com/profile.php?id=61590712843102"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="fb-follow-link"
+          aria-label="Follow us on Facebook"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.898V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+          </svg>
+          Follow us on Facebook
+        </a>
         <hr class="dashed-divider" />
       </div>
 
@@ -110,7 +126,28 @@ const categories = ["All", "Wedding Collections", "Baby Shower Sets", "Bridal Sh
     color: var(--color-muted);
     font-weight: 600;
     letter-spacing: 0.06em;
+    margin-bottom: 1rem;
+  }
+
+  .fb-follow-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    text-decoration: none;
+    border: 1.5px solid var(--color-border);
+    border-radius: 20px;
+    padding: 0.35rem 1rem;
     margin-bottom: 1.25rem;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  .fb-follow-link:hover {
+    background: var(--color-accent);
+    color: #fff;
+    border-color: var(--color-accent);
   }
 
   .dashed-divider {

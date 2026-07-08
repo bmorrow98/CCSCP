@@ -8,7 +8,7 @@ import Layout from '../layouts/Layout.astro';
 
       <!-- Header matching PDF -->
       <div class="form-header">
-        <img src="/ccscplogo.png" alt="CC's Cake Pops" class="form-logo" />
+        <img src="/ccscplogo-almond.png" alt="CC's Cake Pops" class="form-logo" />
         <p class="form-subtitle">CUSTOM ORDER FORM</p>
         <hr class="dashed-divider" />
       </div>
@@ -26,21 +26,16 @@ import Layout from '../layouts/Layout.astro';
           </div>
           <div class="inline-field">
             <label for="phone">Phone:</label>
-            <input type="tel" id="phone" name="phone" required autocomplete="tel" />
+            <input type="tel" id="phone" name="phone" required autocomplete="tel" title="Please enter at least 7 digits" />
           </div>
           <div class="inline-field">
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required autocomplete="email" />
+            <input type="email" id="email" name="email" required autocomplete="email" title="Please enter a valid email address (e.g. name@example.com)" />
           </div>
-          <div class="date-row">
-            <div class="inline-field half">
-              <label for="order-date">Order Date:</label>
-              <input type="date" id="order-date" name="order-date" required />
-            </div>
-            <div class="inline-field half">
-              <label for="pickup-date">Pickup Date:</label>
-              <input type="date" id="pickup-date" name="pickup-date" required />
-            </div>
+          <input type="hidden" id="order-date" name="order-date" />
+          <div class="inline-field">
+            <label for="pickup-date">Pickup Date:</label>
+            <input type="date" id="pickup-date" name="pickup-date" required />
           </div>
         </section>
 
@@ -119,7 +114,9 @@ import Layout from '../layouts/Layout.astro';
         <input type="hidden" name="access_key" value="d6f5e231-f907-48c2-a9c1-0681508710fa" />
         <input type="hidden" name="subject" value="New Local Pickup Order – CC's Cake Pops" />
         <input type="hidden" name="from_name" value="CC's Cake Pops Website" />
+        <input type="hidden" id="hidden-circle-qty" name="Circle Cake Pops Quantity" value="" />
         <input type="hidden" id="hidden-circle-total" name="Circle Cake Pops Total" value="" />
+        <input type="hidden" id="hidden-almond-qty" name="Almond Cake Pops Quantity" value="" />
         <input type="hidden" id="hidden-almond-total" name="Almond Cake Pops Total" value="" />
         <input type="hidden" id="hidden-tax" name="Sales Tax (6.75%)" value="" />
         <input type="hidden" id="hidden-grand-total" name="Estimated Grand Total" value="" />
@@ -141,8 +138,21 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
+  // ── EmailJS config ────────────────────────────────────────────────────────
+  // Sign up free at https://www.emailjs.com/, connect a Gmail service,
+  // create a template with variables: {{customer_name}}, {{to_email}}
+  // then replace the three placeholder values below.
+  const EMAILJS_SERVICE_ID  = 'YOUR_EMAILJS_SERVICE_ID';   // e.g. 'service_abc123'
+  const EMAILJS_TEMPLATE_ID = 'YOUR_EMAILJS_TEMPLATE_ID';  // e.g. 'template_xyz789'
+  const EMAILJS_PUBLIC_KEY  = 'YOUR_EMAILJS_PUBLIC_KEY';   // e.g. 'abcDEFghiJKL'
+  // ──────────────────────────────────────────────────────────────────────────
+
   const TAX_RATE = 0.0675;
   const PRICES: Record<string, number> = { circle: 2.50, almond: 3.50 };
+
+  function isValidPhone(val: string): boolean {
+    return val.replace(/\D/g, '').length >= 7;
+  }
 
   function calcTotals() {
     const rows = [
@@ -170,10 +180,18 @@ import Layout from '../layouts/Layout.astro';
 
   form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach(el => {
     el.addEventListener('blur', () => {
-      el.classList.toggle('field-error', !el.validity.valid);
+      if (el instanceof HTMLInputElement && el.name === 'phone') {
+        el.classList.toggle('field-error', el.value.trim() !== '' && !isValidPhone(el.value));
+      } else {
+        el.classList.toggle('field-error', !el.validity.valid);
+      }
     });
     el.addEventListener('input', () => {
-      if (el.validity.valid) el.classList.remove('field-error');
+      if (el instanceof HTMLInputElement && el.name === 'phone') {
+        if (isValidPhone(el.value)) el.classList.remove('field-error');
+      } else {
+        if (el.validity.valid) el.classList.remove('field-error');
+      }
     });
   });
 
@@ -181,16 +199,29 @@ import Layout from '../layouts/Layout.astro';
     e.preventDefault();
     // Mark all invalid fields on submit attempt
     form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach(el => {
-      el.classList.toggle('field-error', !el.validity.valid);
+      if (el instanceof HTMLInputElement && el.name === 'phone') {
+        el.classList.toggle('field-error', !isValidPhone(el.value));
+      } else {
+        el.classList.toggle('field-error', !el.validity.valid);
+      }
     });
-    if (!form.checkValidity()) {
+    const phoneEl = form.querySelector<HTMLInputElement>('[name="phone"]')!;
+    if (!form.checkValidity() || !isValidPhone(phoneEl.value)) {
       form.querySelector<HTMLElement>('.field-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
-    // Populate hidden total fields before submission
+    // Set order date to today
+    (document.getElementById('order-date') as HTMLInputElement).value =
+      new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Populate hidden quantity and total fields before submission
+    const circleQty = parseInt((document.querySelector<HTMLInputElement>('[name="circle-qty"]')?.value) ?? '0') || 0;
+    const almondQty = parseInt((document.querySelector<HTMLInputElement>('[name="almond-qty"]')?.value) ?? '0') || 0;
+    (document.getElementById('hidden-circle-qty') as HTMLInputElement).value = String(circleQty);
     (document.getElementById('hidden-circle-total') as HTMLInputElement).value =
       '$' + (document.getElementById('circle-total')?.textContent ?? '0.00');
+    (document.getElementById('hidden-almond-qty') as HTMLInputElement).value = String(almondQty);
     (document.getElementById('hidden-almond-total') as HTMLInputElement).value =
       '$' + (document.getElementById('almond-total')?.textContent ?? '0.00');
     (document.getElementById('hidden-tax') as HTMLInputElement).value =
@@ -209,6 +240,27 @@ import Layout from '../layouts/Layout.astro';
       });
       const data = await res.json();
       if (data.success) {
+        // Send confirmation email to customer via EmailJS
+        const customerName  = (form.querySelector<HTMLInputElement>('[name="name"]'))?.value ?? '';
+        const customerEmail = (form.querySelector<HTMLInputElement>('[name="email"]'))?.value ?? '';
+        try {
+          await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              service_id: EMAILJS_SERVICE_ID,
+              template_id: EMAILJS_TEMPLATE_ID,
+              user_id: EMAILJS_PUBLIC_KEY,
+              template_params: {
+                customer_name: customerName,
+                to_email: customerEmail,
+              },
+            }),
+          });
+        } catch {
+          // Confirmation send failed silently — order was still received
+        }
+
         form.style.display = 'none';
         const successEl = document.getElementById('order-success')!;
         successEl.style.display = 'flex';
