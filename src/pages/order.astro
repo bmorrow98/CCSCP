@@ -110,14 +110,6 @@ import Layout from '../layouts/Layout.astro';
           <textarea id="notes" name="notes" rows="6" required placeholder="Describe your customizations here…"></textarea>
         </section>
 
-        <!-- Inspiration Image Upload -->
-        <section class="form-section">
-          <h2 class="section-heading">Inspiration Image <span style="font-weight:400;font-size:0.85rem;color:var(--color-muted);">(optional)</span></h2>
-          <hr class="section-rule" />
-          <p class="notes-hint">(Upload a photo, screenshot, or inspiration image to help us visualize your order)</p>
-          <input type="file" id="inspiration-image" name="inspiration-image" accept="image/*" class="file-input" />
-        </section>
-
         <!-- Web3Forms hidden fields -->
         <input type="hidden" name="access_key" value="d6f5e231-f907-48c2-a9c1-0681508710fa" />
         <input type="hidden" name="subject" value="New Local Pickup Order – CC's Cake Pops" />
@@ -245,9 +237,13 @@ import Layout from '../layouts/Layout.astro';
     submitBtn.textContent = 'Submitting…';
 
     try {
+      // Build FormData manually, excluding the file (not supported on Web3Forms free plan)
+      const payload = new FormData(form);
+      payload.delete('inspiration-image');
+
       const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        body: new FormData(form),
+        body: payload,
       });
       const data = await res.json();
       if (data.success) {
