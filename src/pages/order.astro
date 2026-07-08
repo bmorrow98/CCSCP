@@ -63,7 +63,7 @@ import Layout from '../layouts/Layout.astro';
                     </div>
                   </td>
                   <td>
-                    <input type="number" name="circle-qty" min="0" placeholder="0" class="qty-input" aria-label="Circle Cake Pops quantity" />
+                    <input type="number" id="circle-qty-input" min="0" placeholder="0" class="qty-input" aria-label="Circle Cake Pops quantity" />
                   </td>
                   <td class="total-cell">
                     <span>$</span><span class="row-total" id="circle-total">0.00</span>
@@ -77,7 +77,7 @@ import Layout from '../layouts/Layout.astro';
                     </div>
                   </td>
                   <td>
-                    <input type="number" name="almond-qty" min="0" placeholder="0" class="qty-input" aria-label="Almond Cake Pops quantity" />
+                    <input type="number" id="almond-qty-input" min="0" placeholder="0" class="qty-input" aria-label="Almond Cake Pops quantity" />
                   </td>
                   <td class="total-cell">
                     <span>$</span><span class="row-total" id="almond-total">0.00</span>
@@ -110,6 +110,14 @@ import Layout from '../layouts/Layout.astro';
           <textarea id="notes" name="notes" rows="6" required placeholder="Describe your customizations here…"></textarea>
         </section>
 
+        <!-- Inspiration Image Upload -->
+        <section class="form-section">
+          <h2 class="section-heading">Inspiration Image <span style="font-weight:400;font-size:0.85rem;color:var(--color-muted);">(optional)</span></h2>
+          <hr class="section-rule" />
+          <p class="notes-hint">(Upload a photo, screenshot, or inspiration image to help us visualize your order)</p>
+          <input type="file" id="inspiration-image" name="inspiration-image" accept="image/*" class="file-input" />
+        </section>
+
         <!-- Web3Forms hidden fields -->
         <input type="hidden" name="access_key" value="d6f5e231-f907-48c2-a9c1-0681508710fa" />
         <input type="hidden" name="subject" value="New Local Pickup Order – CC's Cake Pops" />
@@ -122,6 +130,7 @@ import Layout from '../layouts/Layout.astro';
         <input type="hidden" id="hidden-grand-total" name="Estimated Grand Total" value="" />
 
         <div class="form-footer">
+          <div id="form-error-msg" class="form-error-msg" style="display:none;">Please fill out all required fields before submitting.</div>
           <button type="submit" class="btn">Submit Order</button>
         </div>
 
@@ -156,8 +165,8 @@ import Layout from '../layouts/Layout.astro';
 
   function calcTotals() {
     const rows = [
-      { key: 'circle', qtyEl: document.querySelector<HTMLInputElement>('[name="circle-qty"]')!, totalEl: document.getElementById('circle-total')! },
-      { key: 'almond', qtyEl: document.querySelector<HTMLInputElement>('[name="almond-qty"]')!, totalEl: document.getElementById('almond-total')! },
+      { key: 'circle', qtyEl: document.getElementById('circle-qty-input') as HTMLInputElement, totalEl: document.getElementById('circle-total')! },
+      { key: 'almond', qtyEl: document.getElementById('almond-qty-input') as HTMLInputElement, totalEl: document.getElementById('almond-total')! },
     ];
     let subtotal = 0;
     rows.forEach(({ key, qtyEl, totalEl }) => {
@@ -171,14 +180,13 @@ import Layout from '../layouts/Layout.astro';
     document.getElementById('grand-total')!.textContent = (subtotal + tax).toFixed(2);
   }
 
-  document.querySelectorAll<HTMLInputElement>('[name="circle-qty"],[name="almond-qty"]').forEach(el => {
-    el.addEventListener('input', calcTotals);
-  });
+  document.getElementById('circle-qty-input')!.addEventListener('input', calcTotals);
+  document.getElementById('almond-qty-input')!.addEventListener('input', calcTotals);
 
   // Inline field error highlighting
   const form = document.getElementById('order-form') as HTMLFormElement;
 
-  form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach(el => {
+  form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input:not([type="hidden"]):not([type="file"]), textarea').forEach(el => {
     el.addEventListener('blur', () => {
       if (el instanceof HTMLInputElement && el.name === 'phone') {
         el.classList.toggle('field-error', el.value.trim() !== '' && !isValidPhone(el.value));
@@ -197,8 +205,9 @@ import Layout from '../layouts/Layout.astro';
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const errorMsg = document.getElementById('form-error-msg')!;
     // Mark all invalid fields on submit attempt
-    form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach(el => {
+    form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input:not([type="hidden"]):not([type="file"]), textarea').forEach(el => {
       if (el instanceof HTMLInputElement && el.name === 'phone') {
         el.classList.toggle('field-error', !isValidPhone(el.value));
       } else {
@@ -207,17 +216,19 @@ import Layout from '../layouts/Layout.astro';
     });
     const phoneEl = form.querySelector<HTMLInputElement>('[name="phone"]')!;
     if (!form.checkValidity() || !isValidPhone(phoneEl.value)) {
+      errorMsg.style.display = 'block';
       form.querySelector<HTMLElement>('.field-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
+    errorMsg.style.display = 'none';
 
     // Set order date to today
     (document.getElementById('order-date') as HTMLInputElement).value =
       new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
     // Populate hidden quantity and total fields before submission
-    const circleQty = parseInt((document.querySelector<HTMLInputElement>('[name="circle-qty"]')?.value) ?? '0') || 0;
-    const almondQty = parseInt((document.querySelector<HTMLInputElement>('[name="almond-qty"]')?.value) ?? '0') || 0;
+    const circleQty = parseInt((document.getElementById('circle-qty-input') as HTMLInputElement).value) || 0;
+    const almondQty = parseInt((document.getElementById('almond-qty-input') as HTMLInputElement).value) || 0;
     (document.getElementById('hidden-circle-qty') as HTMLInputElement).value = String(circleQty);
     (document.getElementById('hidden-circle-total') as HTMLInputElement).value =
       '$' + (document.getElementById('circle-total')?.textContent ?? '0.00');
@@ -508,20 +519,57 @@ import Layout from '../layouts/Layout.astro';
 
   /* Validation error state */
   .inline-field input.field-error,
-  .inline-field select.field-error,
-  textarea.field-error {
+  .inline-field select.field-error {
     border-bottom-color: #e53e3e;
+    background: #fff0f0;
+  }
+
+  textarea.field-error {
+    border-color: #e53e3e;
+    background: #fff0f0;
   }
 
   .qty-input.field-error {
     border-bottom-color: #e53e3e;
+    background: #fff0f0;
   }
 
-  /* Footer */
+  /* Error message banner */
+  .form-error-msg {
+    width: 100%;
+    background: #fff0f0;
+    border: 1.5px solid #f5c6cb;
+    border-radius: 8px;
+    color: #c0392b;
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 0.65rem 1rem;
+    margin-bottom: 0.75rem;
+    text-align: center;
+  }
+
+  /* File upload */
+  .file-input {
+    display: block;
+    width: 100%;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: var(--color-text);
+    padding: 0.5rem 0.25rem;
+    border: 1.5px dashed var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface-soft);
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .file-input:hover { border-color: var(--color-accent); }
   .form-footer {
     margin-top: 2rem;
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0;
   }
 
   /* Success */
