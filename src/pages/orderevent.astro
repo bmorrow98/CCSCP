@@ -8,7 +8,7 @@ import Layout from '../layouts/Layout.astro';
 
       <!-- Header -->
       <div class="form-header">
-        <img src="/ccscplogo-almond.png" alt="CC's Cake Pops" class="form-logo" />
+        <img src="/ccscplogo-nopops.png" alt="CC's Cake Pops" class="form-logo" />
         <p class="form-subtitle">EVENT CATERING ORDER FORM</p>
         <hr class="dashed-divider" />
       </div>
@@ -32,16 +32,12 @@ import Layout from '../layouts/Layout.astro';
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required autocomplete="email" />
           </div>
-          <div class="date-row">
-            <div class="inline-field half">
-              <label for="order-date">Order Date:</label>
-              <input type="date" id="order-date" name="order-date" required />
-            </div>
-            <div class="inline-field half">
-              <label for="event-date">Event Date:</label>
-              <input type="date" id="event-date" name="event-date" required />
-            </div>
+          <input type="hidden" id="order-date" name="order-date" />
+          <div class="inline-field">
+            <label for="event-date">Event Date:</label>
+            <input type="date" id="event-date" name="event-date" required />
           </div>
+          <p id="event-date-error" class="date-error-msg" style="display:none;"></p>
         </section>
 
         <!-- Event Details -->
@@ -55,11 +51,11 @@ import Layout from '../layouts/Layout.astro';
           </div>
           <div class="inline-field">
             <label for="venue">Venue / Location:</label>
-            <input type="text" id="venue" name="venue" required placeholder="e.g. Riverside Hall, 123 Main St…" />
+            <input type="text" id="venue" name="venue" />
           </div>
           <div class="inline-field">
             <label for="delivery-address">Delivery Address:</label>
-            <input type="text" id="delivery-address" name="delivery-address" required placeholder="Full street address for delivery fee calculation" />
+            <input type="text" id="delivery-address" name="delivery-address" required placeholder="Full street address" />
           </div>
           <div class="delivery-status-wrap" id="delivery-status-wrap" hidden>
             <span class="delivery-status-text" id="delivery-status-text"></span>
@@ -147,11 +143,30 @@ import Layout from '../layouts/Layout.astro';
           <textarea id="notes" name="notes" rows="6" required placeholder="Describe your customizations here…"></textarea>
         </section>
 
+        <!-- Web3Forms hidden fields -->
+        <input type="hidden" name="access_key" value="67e8a6b0-36c1-4a4b-8fe4-1e24e5dc867d" />
+        <input type="hidden" name="subject" value="New Event Order – CC's Cake Pops" />
+        <input type="hidden" name="from_name" value="CC's Cake Pops Website" />
+        <input type="hidden" id="hidden-circle-qty" name="Circle Cake Pops Quantity" value="" />
+        <input type="hidden" id="hidden-circle-total" name="Circle Cake Pops Total" value="" />
+        <input type="hidden" id="hidden-almond-qty" name="Almond Cake Pops Quantity" value="" />
+        <input type="hidden" id="hidden-almond-total" name="Almond Cake Pops Total" value="" />
+        <input type="hidden" id="hidden-delivery-fee" name="Delivery Fee" value="" />
+        <input type="hidden" id="hidden-tax" name="Sales Tax (6.75%)" value="" />
+        <input type="hidden" id="hidden-grand-total" name="Estimated Grand Total" value="" />
+
         <div class="form-footer">
+          <div id="form-error-msg" class="form-error-msg" style="display:none;">Please fill out all required fields before submitting.</div>
           <button type="submit" class="btn">Submit Event Order</button>
         </div>
 
       </form>
+
+      <div id="order-success" class="form-success" style="display:none;">
+        <div class="success-icon">✓</div>
+        <h3>Order Submitted!</h3>
+        <p>Thank you! We will be in touch shortly to confirm your event order.</p>
+      </div>
 
     </div>
   </main>
@@ -283,28 +298,148 @@ import Layout from '../layouts/Layout.astro';
     el.addEventListener('input', calcTotals);
   });
 
+  // ── Event date minimum (business days) ───────────────────────────────────
+  function toYMD(d: Date): string {
+    return d.toISOString().slice(0, 10);
+  }
+
+  function addBusinessDays(base: Date, n: number): Date {
+    const d = new Date(base);
+    d.setHours(0, 0, 0, 0);
+    let added = 0;
+    while (added < n) {
+      d.setDate(d.getDate() + 1);
+      const day = d.getDay();
+      if (day !== 0 && day !== 6) added++;
+    }
+    return d;
+  }
+
+  function getMinEventDate(): Date {
+    const now = new Date();
+    const isPastCutoff = now.getHours() >= 17; // at or after 5 pm
+    return addBusinessDays(now, isPastCutoff ? 2 : 1);
+  }
+
+  const eventDateInput = document.getElementById('event-date') as HTMLInputElement;
+  const eventDateError = document.getElementById('event-date-error') as HTMLParagraphElement;
+  const minEventDate = getMinEventDate();
+  eventDateInput.min = toYMD(minEventDate);
+
+  function validateEventDate(): boolean {
+    const val = eventDateInput.value;
+    if (!val) {
+      eventDateInput.classList.add('field-error');
+      eventDateError.textContent = 'Please select an event date.';
+      eventDateError.style.display = 'block';
+      return false;
+    }
+    // Compare date strings directly (YYYY-MM-DD is lexicographically sortable)
+    if (val < toYMD(minEventDate)) {
+      eventDateInput.classList.add('field-error');
+      const cutoff = new Date().getHours() >= 17;
+      eventDateError.textContent = cutoff
+        ? 'Orders placed after 5 pm require at least 2 business days. Please choose a later date.'
+        : 'Please allow at least 1 business day. Please choose a later date.';
+      eventDateError.style.display = 'block';
+      return false;
+    }
+    eventDateInput.classList.remove('field-error');
+    eventDateError.style.display = 'none';
+    return true;
+  }
+
+  eventDateInput.addEventListener('change', validateEventDate);
+  eventDateInput.addEventListener('blur', validateEventDate);
+  // ─────────────────────────────────────────────────────────────────────────
+
+  function isValidPhone(val: string): boolean {
+    return val.replace(/\D/g, '').length >= 7;
+  }
+
   // Inline field error highlighting
   const form = document.getElementById('order-form') as HTMLFormElement;
 
-  form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach(el => {
+  form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input:not([type="hidden"]), textarea').forEach(el => {
     el.addEventListener('blur', () => {
-      el.classList.toggle('field-error', !el.validity.valid);
+      if (el instanceof HTMLInputElement && el.name === 'phone') {
+        el.classList.toggle('field-error', el.value.trim() !== '' && !isValidPhone(el.value));
+      } else {
+        el.classList.toggle('field-error', !el.validity.valid);
+      }
     });
     el.addEventListener('input', () => {
-      if (el.validity.valid) el.classList.remove('field-error');
+      if (el instanceof HTMLInputElement && el.name === 'phone') {
+        if (isValidPhone(el.value)) el.classList.remove('field-error');
+      } else {
+        if (el.validity.valid) el.classList.remove('field-error');
+      }
     });
   });
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea').forEach(el => {
-      el.classList.toggle('field-error', !el.validity.valid);
+    const errorMsg = document.getElementById('form-error-msg')!;
+    form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input:not([type="hidden"]), textarea').forEach(el => {
+      if (el instanceof HTMLInputElement && el.name === 'phone') {
+        el.classList.toggle('field-error', !isValidPhone(el.value));
+      } else {
+        el.classList.toggle('field-error', !el.validity.valid);
+      }
     });
-    if (!form.checkValidity()) {
+    const phoneEl = form.querySelector<HTMLInputElement>('[name="phone"]')!;
+    const dateOk = validateEventDate();
+    if (!form.checkValidity() || !isValidPhone(phoneEl.value) || !dateOk) {
+      errorMsg.style.display = 'block';
       form.querySelector<HTMLElement>('.field-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
-    // TODO: wire up submission
+    errorMsg.style.display = 'none';
+
+    // Set order date to today
+    (document.getElementById('order-date') as HTMLInputElement).value =
+      new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Populate hidden totals
+    const circleQty = parseInt((document.querySelector<HTMLInputElement>('[name="circle-qty"]'))!.value) || 0;
+    const almondQty = parseInt((document.querySelector<HTMLInputElement>('[name="almond-qty"]'))!.value) || 0;
+    (document.getElementById('hidden-circle-qty') as HTMLInputElement).value = String(circleQty);
+    (document.getElementById('hidden-circle-total') as HTMLInputElement).value =
+      '$' + (document.getElementById('circle-total')?.textContent ?? '0.00');
+    (document.getElementById('hidden-almond-qty') as HTMLInputElement).value = String(almondQty);
+    (document.getElementById('hidden-almond-total') as HTMLInputElement).value =
+      '$' + (document.getElementById('almond-total')?.textContent ?? '0.00');
+    (document.getElementById('hidden-delivery-fee') as HTMLInputElement).value = '$' + deliveryFee.toFixed(2);
+    (document.getElementById('hidden-tax') as HTMLInputElement).value =
+      '$' + (document.getElementById('tax-total')?.textContent ?? '0.00');
+    (document.getElementById('hidden-grand-total') as HTMLInputElement).value =
+      '$' + (document.getElementById('grand-total')?.textContent ?? '0.00');
+
+    const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: new FormData(form),
+      });
+      const data = await res.json();
+      if (data.success) {
+        form.style.display = 'none';
+        const successEl = document.getElementById('order-success')!;
+        successEl.style.display = 'flex';
+        successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Event Order';
+        alert('Something went wrong. Please try again or contact CC directly.');
+      }
+    } catch {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Event Order';
+      alert('Network error. Please check your connection and try again.');
+    }
   });
 </script>
 
@@ -538,21 +673,50 @@ import Layout from '../layouts/Layout.astro';
 
   textarea:focus { border-color: var(--color-accent); }
 
+  .date-error-msg {
+    font-size: 0.82rem;
+    color: #c0392b;
+    margin-top: -0.5rem;
+    margin-bottom: 0.85rem;
+    margin-left: 112px;
+  }
+
   /* Validation error state */
   .inline-field input.field-error,
-  .inline-field select.field-error,
-  textarea.field-error {
+  .inline-field select.field-error {
     border-bottom-color: #e53e3e;
+    background: #fff0f0;
+  }
+
+  textarea.field-error {
+    border-color: #e53e3e;
+    background: #fff0f0;
   }
 
   .qty-input.field-error {
     border-bottom-color: #e53e3e;
+    background: #fff0f0;
+  }
+
+  /* Error message banner */
+  .form-error-msg {
+    width: 100%;
+    background: #fff0f0;
+    border: 1.5px solid #f5c6cb;
+    border-radius: 8px;
+    color: #c0392b;
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 0.65rem 1rem;
+    margin-bottom: 0.75rem;
+    text-align: center;
   }
 
   .form-footer {
     margin-top: 2rem;
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: flex-end;
   }
 
   .form-success {
