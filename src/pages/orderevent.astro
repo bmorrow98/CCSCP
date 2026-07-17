@@ -147,10 +147,6 @@ import Layout from '../layouts/Layout.astro';
         <input type="hidden" name="access_key" value="67e8a6b0-36c1-4a4b-8fe4-1e24e5dc867d" />
         <input type="hidden" name="subject" value="New Event Order – CC's Cake Pops" />
         <input type="hidden" name="from_name" value="CC's Cake Pops Website" />
-        <input type="hidden" id="hidden-circle-qty" name="Circle Cake Pops Quantity" value="" />
-        <input type="hidden" id="hidden-circle-total" name="Circle Cake Pops Total" value="" />
-        <input type="hidden" id="hidden-almond-qty" name="Almond Cake Pops Quantity" value="" />
-        <input type="hidden" id="hidden-almond-total" name="Almond Cake Pops Total" value="" />
         <input type="hidden" id="hidden-delivery-fee" name="Delivery Fee" value="" />
         <input type="hidden" id="hidden-tax" name="Sales Tax (6.75%)" value="" />
         <input type="hidden" id="hidden-grand-total" name="Estimated Grand Total" value="" />
@@ -396,19 +392,17 @@ import Layout from '../layouts/Layout.astro';
     }
     errorMsg.style.display = 'none';
 
-    // Set order date to today
-    (document.getElementById('order-date') as HTMLInputElement).value =
-      new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    // Set order date to today (MM-DD-YYYY)
+    const now = new Date();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    (document.getElementById('order-date') as HTMLInputElement).value = `${mm}-${dd}-${now.getFullYear()}`;
+
+    // Format event date to MM-DD-YYYY
+    const [ey, em, eday] = eventDateInput.value.split('-');
+    eventDateInput.value = `${em}-${eday}-${ey}`;
 
     // Populate hidden totals
-    const circleQty = parseInt((document.querySelector<HTMLInputElement>('[name="circle-qty"]'))!.value) || 0;
-    const almondQty = parseInt((document.querySelector<HTMLInputElement>('[name="almond-qty"]'))!.value) || 0;
-    (document.getElementById('hidden-circle-qty') as HTMLInputElement).value = String(circleQty);
-    (document.getElementById('hidden-circle-total') as HTMLInputElement).value =
-      '$' + (document.getElementById('circle-total')?.textContent ?? '0.00');
-    (document.getElementById('hidden-almond-qty') as HTMLInputElement).value = String(almondQty);
-    (document.getElementById('hidden-almond-total') as HTMLInputElement).value =
-      '$' + (document.getElementById('almond-total')?.textContent ?? '0.00');
     (document.getElementById('hidden-delivery-fee') as HTMLInputElement).value = '$' + deliveryFee.toFixed(2);
     (document.getElementById('hidden-tax') as HTMLInputElement).value =
       '$' + (document.getElementById('tax-total')?.textContent ?? '0.00');

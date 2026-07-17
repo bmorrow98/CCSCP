@@ -115,10 +115,6 @@ import Layout from '../layouts/Layout.astro';
         <input type="hidden" name="access_key" value="d6f5e231-f907-48c2-a9c1-0681508710fa" />
         <input type="hidden" name="subject" value="New Local Pickup Order – CC's Cake Pops" />
         <input type="hidden" name="from_name" value="CC's Cake Pops Website" />
-        <input type="hidden" id="hidden-circle-qty" name="Circle Cake Pops Quantity" value="" />
-        <input type="hidden" id="hidden-circle-total" name="Circle Cake Pops Total" value="" />
-        <input type="hidden" id="hidden-almond-qty" name="Almond Cake Pops Quantity" value="" />
-        <input type="hidden" id="hidden-almond-total" name="Almond Cake Pops Total" value="" />
         <input type="hidden" id="hidden-tax" name="Sales Tax (6.75%)" value="" />
         <input type="hidden" id="hidden-grand-total" name="Estimated Grand Total" value="" />
 
@@ -270,19 +266,12 @@ import Layout from '../layouts/Layout.astro';
     }
     errorMsg.style.display = 'none';
 
-    // Set order date to today
-    (document.getElementById('order-date') as HTMLInputElement).value =
-      new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    // Set order date to today (MM-DD-YYYY)
+    const now = new Date();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    (document.getElementById('order-date') as HTMLInputElement).value = `${mm}-${dd}-${now.getFullYear()}`;
 
-    // Populate hidden quantity and total fields before submission
-    const circleQty = parseInt((document.getElementById('circle-qty-input') as HTMLInputElement).value) || 0;
-    const almondQty = parseInt((document.getElementById('almond-qty-input') as HTMLInputElement).value) || 0;
-    (document.getElementById('hidden-circle-qty') as HTMLInputElement).value = String(circleQty);
-    (document.getElementById('hidden-circle-total') as HTMLInputElement).value =
-      '$' + (document.getElementById('circle-total')?.textContent ?? '0.00');
-    (document.getElementById('hidden-almond-qty') as HTMLInputElement).value = String(almondQty);
-    (document.getElementById('hidden-almond-total') as HTMLInputElement).value =
-      '$' + (document.getElementById('almond-total')?.textContent ?? '0.00');
     (document.getElementById('hidden-tax') as HTMLInputElement).value =
       '$' + (document.getElementById('tax-total')?.textContent ?? '0.00');
     (document.getElementById('hidden-grand-total') as HTMLInputElement).value =
